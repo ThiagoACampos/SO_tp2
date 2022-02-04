@@ -121,6 +121,8 @@ int             wait(void);
 int             waitAux(int*);
 void            wakeup(void*);
 void            yield(void);
+void            recalculateExecutionTime(void);
+void            printProcessTimeExecution(void);
 
 // swtch.S
 void            swtch(struct context**, struct context*);

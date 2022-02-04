@@ -48,9 +48,20 @@ trap(struct trapframe *tf)
 
   switch(tf->trapno){
   case T_IRQ0 + IRQ_TIMER:
+    // 1 tick = 10ms
+    // 10s = 1000 ticks
+    // 1s = 100ticks
     if(cpuid() == 0){
       acquire(&tickslock);
       ticks++;
+      // Chama função para recálculo do tempo de execução dos processos
+      if(ticks % 1000 == 0){
+        cprintf("entrou 1");
+        printProcessTimeExecution();
+        recalculateExecutionTime();
+        cprintf("entrou 2");
+      }
+
       wakeup(&ticks);
       release(&tickslock);
     }
@@ -100,11 +111,23 @@ trap(struct trapframe *tf)
   if(myproc() && myproc()->killed && (tf->cs&3) == DPL_USER)
     exit();
 
+
+  if(myproc() && myproc()->state == RUNNING){
+    cprintf("incrementando...");
+    myproc()->real_execution_time++;
+    if(myproc()->real_execution_time > myproc()->expected_execution_time){
+      yield();
+    }
+  }
   // Force process to give up CPU on clock tick.
   // If interrupts were on while locks held, would need to check nlock.
-  if(myproc() && myproc()->state == RUNNING &&
-     tf->trapno == T_IRQ0+IRQ_TIMER)
-    yield();
+  if(myproc() && myproc()->state == RUNNING && tf->trapno == T_IRQ0+IRQ_TIMER){
+    
+    if(myproc()->real_execution_time > myproc()->expected_execution_time){
+      yield();
+    }
+      
+  }
 
   // Check if the process has been killed since we yielded
   if(myproc() && myproc()->killed && (tf->cs&3) == DPL_USER)

@@ -5,13 +5,17 @@ int main (int argc, char *argv[]){
     
     int sys_a = 0; 
     int real_a = uptime();
+
     int pid;
-    pid = fork();
-    if (pid == 0){
-        exec(argv[1], argv);
-        exit();
-    }else{
-        waitAux(&sys_a);
+
+    for(int k = 1; k <= 2; k++){
+        pid = fork();
+        if (pid == 0){
+            exec(argv[k], argv);
+            exit();
+        }else{
+            waitAux(&sys_a);
+        }
     }
     
     int real_b = uptime();

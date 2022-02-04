@@ -16,12 +16,6 @@ main(int argc, char *argv[])
 
     for (int i = 0; i < 150; i++){
         sleep(1);
-        printf(1,"teste\n");
-        printf(1,"teste\n");
-        printf(1,"teste\n");
-        printf(1,"teste\n");
-        printf(1,"teste\n");
-        printf(1,"teste\n");
     }
 
     for (int i = 0; i < 99999; i++){

@@ -88,6 +88,9 @@ allocproc(void)
 found:
   p->state = EMBRYO;
   p->pid = nextpid++;
+  p->priority = 1;
+  p->expected_execution_time = 0;
+  p->real_execution_time = 0;
 
   release(&ptable.lock);
 
@@ -382,6 +385,8 @@ scheduler(void)
       if(p->state != RUNNABLE)
         continue;
 
+      if(p->real_execution_time >= p->expected_execution_time)
+        continue;
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
       // before jumping back to us.
@@ -399,6 +404,39 @@ scheduler(void)
     release(&ptable.lock);
 
   }
+}
+
+
+void
+recalculateExecutionTime(void)
+{
+
+  struct proc *p;
+  int sum_priority = 0;
+
+  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+    sum_priority += p->priority;
+  }
+
+  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+    p->expected_execution_time = (int) ((p->priority / (double) sum_priority) * 1000);
+    p->real_execution_time = 0;
+  }
+
+
+}
+
+void
+printProcessTimeExecution(void)
+{
+
+  struct proc *p;
+
+  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+    if(p->pid != 0)
+      cprintf("Tempo de execução do processo %d : %d \n", p->pid, p->real_execution_time);
+  }
+
 }
 
 // Enter scheduler.  Must hold only ptable.lock
