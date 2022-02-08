@@ -107,6 +107,8 @@ extern int sys_date(void);
 extern int sys_time(void);
 extern int sys_waitAux(void);
 extern int sys_testes(void);
+extern int sys_setprio(void);
+extern int sys_run(void);
 
 static int (*syscalls[])(void) = {
 [SYS_fork]    sys_fork,
@@ -134,6 +136,8 @@ static int (*syscalls[])(void) = {
 [SYS_time]   sys_time,
 [SYS_waitAux]   sys_waitAux,
 [SYS_testes]   sys_testes,
+[SYS_setprio]   sys_setprio,
+[SYS_run]     sys_run
 };
 
 void

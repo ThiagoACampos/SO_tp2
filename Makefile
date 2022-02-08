@@ -185,6 +185,7 @@ UPROGS=\
 	_uptime\
 	_time\
 	_testes\
+	_run\
 
 fs.img: mkfs README $(UPROGS)
 	./mkfs fs.img README $(UPROGS)

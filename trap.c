@@ -36,6 +36,7 @@ idtinit(void)
 void
 trap(struct trapframe *tf)
 {
+  
   if(tf->trapno == T_SYSCALL){
     if(myproc()->killed)
       exit();
@@ -56,10 +57,10 @@ trap(struct trapframe *tf)
       ticks++;
       // Chama função para recálculo do tempo de execução dos processos
       if(ticks % 1000 == 0){
-        cprintf("entrou 1");
+        cprintf("entrou 1 \n");
         printProcessTimeExecution();
         recalculateExecutionTime();
-        cprintf("entrou 2");
+        cprintf("entrou 2 \n");
       }
 
       wakeup(&ticks);
@@ -111,22 +112,15 @@ trap(struct trapframe *tf)
   if(myproc() && myproc()->killed && (tf->cs&3) == DPL_USER)
     exit();
 
-
-  if(myproc() && myproc()->state == RUNNING){
-    cprintf("incrementando...");
-    myproc()->real_execution_time++;
-    if(myproc()->real_execution_time > myproc()->expected_execution_time){
-      yield();
-    }
-  }
   // Force process to give up CPU on clock tick.
   // If interrupts were on while locks held, would need to check nlock.
   if(myproc() && myproc()->state == RUNNING && tf->trapno == T_IRQ0+IRQ_TIMER){
-    
-    if(myproc()->real_execution_time > myproc()->expected_execution_time){
+    myproc()->real_execution_time++;
+    //cprintf("processo rodando -> %s, real_execution_time -> %d, expected_execution_time -> %d \n", myproc()->name,myproc()->real_execution_time, myproc()->expected_execution_time);
+    if(myproc()->real_execution_time >= myproc()->expected_execution_time){
+      cprintf("realizando yield()...");
       yield();
     }
-      
   }
 
   // Check if the process has been killed since we yielded

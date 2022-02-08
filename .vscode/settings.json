@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "user.h": "c",
+        "limits": "c",
+        "*.tcc": "c",
+        "type_traits": "c"
+    }
+}

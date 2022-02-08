@@ -25,3 +25,5 @@
 #define SYS_time  24
 #define SYS_waitAux  25
 #define SYS_testes  26
+#define SYS_setprio  27
+#define SYS_run  28

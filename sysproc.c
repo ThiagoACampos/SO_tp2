@@ -123,3 +123,28 @@ int
 sys_testes(void){
   return 0;
 }
+
+int
+sys_setprio(void){
+  /*char *ptr1;
+  char *ptr2;
+  argptr(0, &ptr1, 2*sizeof(int));
+  argptr(1, &ptr2, 2*sizeof(int));
+  // seu código aqui
+  int *priority = (int *)ptr1;
+  int *p_id = (int *)ptr2;*/
+
+  int priority;
+  int p_id;
+
+  argint(0, &priority);
+  argint(1, &p_id);
+
+  cprintf("priority %d, p_id %d ", priority, p_id);
+  setprio(priority,p_id);
+  return 0;
+}
+
+int sys_run(void){
+  return 0;
+}

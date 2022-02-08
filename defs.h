@@ -123,6 +123,7 @@ void            wakeup(void*);
 void            yield(void);
 void            recalculateExecutionTime(void);
 void            printProcessTimeExecution(void);
+void            setprio(int, int);
 
 // swtch.S
 void            swtch(struct context**, struct context*);

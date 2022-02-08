@@ -8,15 +8,26 @@ int main (int argc, char *argv[]){
 
     int pid;
 
-    for(int k = 1; k <= 2; k++){
+    
+    //printf(1,"argv[k] -> %s \n", argv[k]);
+    pid = fork();
+    if (pid == 0){
+        exec(argv[1], argv);
+        exit();
+    }else{
         pid = fork();
         if (pid == 0){
-            exec(argv[k], argv);
+            exec(argv[1], argv);
             exit();
         }else{
+            printf(1,"pid -> %d",pid);
+            setprio(2,pid);
             waitAux(&sys_a);
         }
+        waitAux(&sys_a);
     }
+    
+    
     
     int real_b = uptime();
 

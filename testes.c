@@ -35,7 +35,7 @@ main(int argc, char *argv[])
   }else if(strcmp("3",argv[2]) == 0){
       float j = 0;
       for (int i = 0; i < 10000; i++){
-          for(int k=0; k < 20000; k++){
+          for(int k=0; k < 60000; k++){
               j += k+i*i*k;
           }
       }

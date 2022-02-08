@@ -115,6 +115,8 @@ found:
   memset(p->context, 0, sizeof *p->context);
   p->context->eip = (uint)forkret;
 
+  recalculateExecutionTime();
+
   return p;
 }
 
@@ -385,7 +387,7 @@ scheduler(void)
       if(p->state != RUNNABLE)
         continue;
 
-      if(p->real_execution_time >= p->expected_execution_time)
+      if(p->real_execution_time != 0 && p->expected_execution_time != 0 && (p->real_execution_time >= p->expected_execution_time))
         continue;
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
@@ -393,6 +395,7 @@ scheduler(void)
       c->proc = p;
       switchuvm(p);
       p->state = RUNNING;
+      p->real_execution_time = 0;
 
       swtch(&(c->scheduler), p->context);
       switchkvm();
@@ -414,14 +417,22 @@ recalculateExecutionTime(void)
   struct proc *p;
   int sum_priority = 0;
 
+  // Loop over process table looking for process to run.
+  acquire(&ptable.lock);
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-    sum_priority += p->priority;
+    if(p->pid != 1 && p->pid != 2)
+      sum_priority += p->priority;
   }
 
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-    p->expected_execution_time = (int) ((p->priority / (double) sum_priority) * 1000);
-    p->real_execution_time = 0;
+    if(p->pid != 1 && p->pid != 2){
+      p->expected_execution_time = (int) ((p->priority / (double) sum_priority) * 1000);
+    }
+    if(p->state == 3){
+      p->real_execution_time = 0;
+    }
   }
+  release(&ptable.lock);
 
 
 }
@@ -432,11 +443,29 @@ printProcessTimeExecution(void)
 
   struct proc *p;
 
+  // Loop over process table looking for process to run.
+  acquire(&ptable.lock);
+  cprintf("Informações Processos \n");
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-    if(p->pid != 0)
-      cprintf("Tempo de execução do processo %d : %d \n", p->pid, p->real_execution_time);
+    if(p->pid != 0){
+      cprintf("Id \t Nomes \t Status \t Prioridade \t Exec Esperada \t Real Exec \n");
+      cprintf("%d \t %s \t %d \t\t %d \t\t %d \t\t %d \n",p->pid, p->name, p->state,p->priority,p->expected_execution_time, p->real_execution_time);
+    }
   }
+  release(&ptable.lock);
 
+}
+
+void setprio(int priority, int p_id)
+{
+  struct proc *p;
+  // Loop over process table looking for process to run.
+  acquire(&ptable.lock);
+  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+    if(p->pid == p_id)
+      p->priority = priority;
+  }
+  release(&ptable.lock);
 }
 
 // Enter scheduler.  Must hold only ptable.lock
