@@ -27,3 +27,5 @@
 #define SYS_testes  26
 #define SYS_setprio  27
 #define SYS_run  28
+#define SYS_genprog 29
+#define SYS_test1 30

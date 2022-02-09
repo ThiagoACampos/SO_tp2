@@ -57,10 +57,8 @@ trap(struct trapframe *tf)
       ticks++;
       // Chama função para recálculo do tempo de execução dos processos
       if(ticks % 1000 == 0){
-        cprintf("entrou 1 \n");
         printProcessTimeExecution();
         recalculateExecutionTime();
-        cprintf("entrou 2 \n");
       }
 
       wakeup(&ticks);
@@ -118,7 +116,6 @@ trap(struct trapframe *tf)
     myproc()->real_execution_time++;
     //cprintf("processo rodando -> %s, real_execution_time -> %d, expected_execution_time -> %d \n", myproc()->name,myproc()->real_execution_time, myproc()->expected_execution_time);
     if(myproc()->real_execution_time >= myproc()->expected_execution_time){
-      cprintf("realizando yield()...");
       yield();
     }
   }

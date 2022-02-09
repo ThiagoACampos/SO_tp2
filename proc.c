@@ -115,7 +115,7 @@ found:
   memset(p->context, 0, sizeof *p->context);
   p->context->eip = (uint)forkret;
 
-  recalculateExecutionTime();
+  //recalculateExecutionTime();
 
   return p;
 }
@@ -420,16 +420,16 @@ recalculateExecutionTime(void)
   // Loop over process table looking for process to run.
   acquire(&ptable.lock);
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-    if(p->pid != 1 && p->pid != 2)
+    if(p->state == RUNNING || p->state == RUNNABLE)
       sum_priority += p->priority;
   }
 
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-    if(p->pid != 1 && p->pid != 2){
+    if(p->state == RUNNING || p->state == RUNNABLE){
       p->expected_execution_time = (int) ((p->priority / (double) sum_priority) * 1000);
-    }
-    if(p->state == 3){
       p->real_execution_time = 0;
+    } else {
+      p->expected_execution_time = 0;
     }
   }
   release(&ptable.lock);
@@ -445,11 +445,11 @@ printProcessTimeExecution(void)
 
   // Loop over process table looking for process to run.
   acquire(&ptable.lock);
-  cprintf("Informações Processos \n");
+  cprintf("\nInformações Processos - Janela \n");
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
     if(p->pid != 0){
       cprintf("Id \t Nomes \t Status \t Prioridade \t Exec Esperada \t Real Exec \n");
-      cprintf("%d \t %s \t %d \t\t %d \t\t %d \t\t %d \n",p->pid, p->name, p->state,p->priority,p->expected_execution_time, p->real_execution_time);
+      cprintf("%d \t %s \t %d \t\t %d \t\t %dms \t\t %dms \n",p->pid, p->name, p->state,p->priority,p->expected_execution_time * 10, p->real_execution_time * 10);
     }
   }
   release(&ptable.lock);

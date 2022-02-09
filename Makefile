@@ -36,6 +36,7 @@ OBJS = \
 
 # Try to infer the correct TOOLPREFIX if not set
 ifndef TOOLPREFIX
+#TOOLPREFIX := i386-elf-
 TOOLPREFIX := $(shell if i386-jos-elf-objdump -i 2>&1 | grep '^elf32-i386$$' >/dev/null 2>&1; \
 	then echo 'i386-jos-elf-'; \
 	elif objdump -i 2>&1 | grep 'elf32-i386' >/dev/null 2>&1; \
@@ -55,6 +56,7 @@ endif
 
 # Try to infer the correct QEMU
 ifndef QEMU
+#QEMU = /opt/local/bin/qemu-system-i386
 QEMU = $(shell if which qemu > /dev/null; \
 	then echo qemu; exit; \
 	elif which qemu-system-i386 > /dev/null; \
@@ -76,6 +78,7 @@ AS = $(TOOLPREFIX)gas
 LD = $(TOOLPREFIX)ld
 OBJCOPY = $(TOOLPREFIX)objcopy
 OBJDUMP = $(TOOLPREFIX)objdump
+#CFLAGS = -fno-pic -std=gnu17 -static -fno-builtin -fno-strict-aliasing -O2 -Wall -MD -ggdb -m32 -march=i686 -Werror -fno-omit-frame-pointer
 CFLAGS = -fno-pic -static -fno-builtin -fno-strict-aliasing -O2 -Wall -MD -ggdb -m32 -Werror -fno-omit-frame-pointer
 CFLAGS += $(shell $(CC) -fno-stack-protector -E -x c /dev/null >/dev/null 2>&1 && echo -fno-stack-protector)
 ASFLAGS = -m32 -gdwarf-2 -Wa,-divide
@@ -178,7 +181,6 @@ UPROGS=\
 	_rm\
 	_sh\
 	_stressfs\
-	_usertests\
 	_wc\
 	_zombie\
 	_date\
@@ -186,6 +188,9 @@ UPROGS=\
 	_time\
 	_testes\
 	_run\
+	_genprog\
+	_test1\
+	#_usertests\
 
 fs.img: mkfs README $(UPROGS)
 	./mkfs fs.img README $(UPROGS)
