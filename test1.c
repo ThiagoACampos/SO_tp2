@@ -2,18 +2,18 @@
 #include "user.h"
 #include <stddef.h>
 
-int main() {
+int main(int argc, char *argv[]) {
 
     printf(1, "\n\n======= Caso de Teste 1 ========\n\n");
 
-    char* longProg[1] = { "genprog" };
+    //char* argv[2] = { "testes","3" };
 
     int pid;
 
     // Primeiro processo
     pid = fork();
     if (pid == 0) {
-        exec(longProg[0], longProg);
+        exec(argv[1], argv);
         exit();
     } else {
         setprio(5, pid);
@@ -22,7 +22,7 @@ int main() {
         // Segundo processo
         int pid = fork();
         if (pid == 0) {
-            exec(longProg[0], longProg);
+            exec(argv[1], argv);
             exit();
 
         } else {            
@@ -36,7 +36,7 @@ int main() {
             // Terceiro processo
             int pid = fork();
             if (pid == 0) {
-                exec(longProg[0], longProg);
+                exec(argv[1], argv);
                 exit();
             }else {
                 setprio(3, pid);
@@ -48,7 +48,7 @@ int main() {
                 // Quarto processo
                 int pid = fork();
                 if (pid == 0) {
-                    exec(longProg[0], longProg);
+                    exec(argv[1], argv);
                     exit();
                 }else {
                     printf(1, "\nAlocando processo P%d com prioridade 1\n", pid);
@@ -60,6 +60,7 @@ int main() {
         }
         wait();
     }
+    wait();
 
     exit();
 

@@ -248,6 +248,8 @@ exit(void)
     }
   }
 
+  cprintf("\nTérmino do processo: %d \n",curproc->pid);
+
   begin_op();
   iput(curproc->cwd);
   end_op();
@@ -420,16 +422,16 @@ recalculateExecutionTime(void)
   // Loop over process table looking for process to run.
   acquire(&ptable.lock);
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-    if(p->state == RUNNING || p->state == RUNNABLE)
+    if(p->pid != 1 && p->pid != 2 && strncmp(p->name,"test1",5) != 0 )
       sum_priority += p->priority;
   }
 
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-    if(p->state == RUNNING || p->state == RUNNABLE){
+    if(p->pid != 1 && p->pid != 2 && strncmp(p->name,"test1",5) != 0){
       p->expected_execution_time = (int) ((p->priority / (double) sum_priority) * 1000);
+    }
+    if(p->state == 3){
       p->real_execution_time = 0;
-    } else {
-      p->expected_execution_time = 0;
     }
   }
   release(&ptable.lock);

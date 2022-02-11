@@ -19,9 +19,17 @@ void exec_processo(int numero_execucoes, char *argv[]){
 }
 
 int main (int argc, char *argv[]){
-    exec_processo(1,argv);
-	exit();
+    //exec_processo(1,argv);
+    int pid;
+    pid = fork();
+    if (pid == 0){
+        exec(argv[1],argv);
+	    exit();
+    }else{
+        wait();
+    }
     
+    exit();
     return 0;
 }
 
